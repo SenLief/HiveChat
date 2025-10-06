@@ -85,15 +85,14 @@ services:
 
   db:
     container_name: hivechat-db
-    image: linuxserver/postgres:16
+    image: postgres:16-alpine
     environment:
       # 数据库配置
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-10}
       POSTGRES_DB: hivechat
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
       TZ: ${TZ:-UTC}
+    user: "${PUID:-1000}:${PGID:-10}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/init:/docker-entrypoint-initdb.d:ro
