@@ -39,21 +39,48 @@ COPY . .
 # 构建应用
 RUN npm run build
 
-# 运行阶段（使用 LinuxServer Node.js 镜像）
-FROM linuxserver/node:22
+# 运行阶段（使用 Alpine Linux + 权限管理脚本）
+FROM node:22-alpine AS runner
 WORKDIR /app
 
 # 设置环境变量
 ENV NODE_ENV=production
 ENV IS_DOCKER=true
 
+# 安装必要的工具
+RUN apk add --no-cache bash curl shadow
+
 # 复制必要文件
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# LinuxServer 镜像会自动处理用户权限管理
-# 不需要手动创建用户，PUID/PGID 环境变量会控制权限
+# 创建权限管理脚本
+RUN cat > /usr/local/bin/entrypoint.sh << 'EOF'
+#!/bin/bash
+set -e
+
+# 获取环境变量
+PUID=${PUID:-1000}
+PGID=${PGID:-10}
+
+# 创建用户和组
+if ! getent group $PGID > /dev/null 2>&1; then
+    addgroup -g $PGID -S hivechat
+fi
+
+if ! getent passwd $PUID > /dev/null 2>&1; then
+    adduser -u $PUID -G hivechat -s /bin/bash -D hivechat
+fi
+
+# 设置目录权限
+chown -R $PUID:$PGID /app
+
+# 切换到应用用户
+exec su-exec $PUID:$PGID "$@"
+EOF
+
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # 暴露端口
 EXPOSE 3000
@@ -63,4 +90,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:3000/api/health || exit 1
 
 # 入口命令
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["node", "server.js"]
