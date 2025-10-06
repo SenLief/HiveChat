@@ -83,6 +83,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=linuxserver-${{ github.ref }}
           cache-to: type=gha,mode=max,scope=linuxserver-${{ github.ref }}
+          provenance: false
           build-args: |
             HOST_PORT=3000
             DATABASE_URL=""

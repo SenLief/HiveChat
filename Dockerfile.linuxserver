@@ -40,7 +40,7 @@ COPY . .
 RUN npm run build
 
 # 运行阶段（使用 LinuxServer Node.js 镜像）
-FROM lscr.io/linuxserver/node:22
+FROM linuxserver/node:22
 WORKDIR /app
 
 # 设置环境变量

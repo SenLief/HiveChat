@@ -85,7 +85,7 @@ services:
 
   db:
     container_name: hivechat-db
-    image: lscr.io/linuxserver/postgres:16
+    image: linuxserver/postgres:16
     environment:
       # 数据库配置
       PUID: ${PUID:-1000}
