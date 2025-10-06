@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { fetchWithProxy } from '@/app/utils/proxy';
 
 // 重试函数
 async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3, timeout = 10000): Promise<Response> {
@@ -7,7 +8,7 @@ async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3,
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
       
-      const response = await fetch(url, {
+      const response = await fetchWithProxy(url, {
         ...options,
         signal: controller.signal,
       });

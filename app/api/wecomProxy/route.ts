@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { fetchWithProxy } from '@/app/utils/proxy';
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -21,12 +22,12 @@ export async function POST(req: NextRequest) {
         headers: { 'Content-Type': 'application/json' },
       });
     }
-    const response = await fetch(
+    const response = await fetchWithProxy(
       `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${corpid}&corpsecret=${corpsecret}`
     );
 
     const data = await response.json();
-    const userinfoResponse = await fetch(
+    const userinfoResponse = await fetchWithProxy(
       `https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo?access_token=${data.access_token}&code=${code}`
     );
     const userinfoData = await userinfoResponse.json();

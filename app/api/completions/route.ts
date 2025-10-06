@@ -5,6 +5,7 @@ import { isUserWithinQuota } from './actions';
 import proxyOpenAiStream from './proxyOpenAiStream';
 import proxyClaudeStream from './proxyClaudeStream';
 import proxyGeminiStream from './proxyGeminiStream';
+import { fetchWithProxy } from '@/app/utils/proxy';
 // Vercel Hobby 默认 10s，最大 60
 export const maxDuration = 60;
 
@@ -71,7 +72,7 @@ export async function POST(req: NextRequest) {
     }
     // 获取请求体
     const body = await req.text();
-    const response = await fetch(realEndpoint, {
+    const response = await fetchWithProxy(realEndpoint, {
       method: 'POST',
       headers: headers,
       body: body,

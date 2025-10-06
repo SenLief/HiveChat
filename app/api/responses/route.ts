@@ -4,6 +4,7 @@ import { getLlmConfigByProvider, completeEndpoint } from '@/app/utils/llms';
 import { isUserWithinQuota } from '../completions/actions';
 import proxyStream from './proxyStream';
 import proxyNonStream from './proxyNonStream';
+import { fetchWithProxy } from '@/app/utils/proxy';
 // Vercel Hobby 默认 10s，最大 60
 export const maxDuration = 60;
 
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
 
     // 检查是否需要流式响应
     const isStreamMode = parsedBody?.stream === true;
-    const response = await fetch(realEndpoint, {
+    const response = await fetchWithProxy(realEndpoint, {
       method: 'POST',
       headers: headers,
       body: body,
