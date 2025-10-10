@@ -46,7 +46,7 @@ WORKDIR /app
 # 设置环境变量
 ENV NODE_ENV=production \
     IS_DOCKER=true \
-    TZ=Etc/UTC
+    TZ=Asia/Shanghai
 
 # 复制必要文件
 COPY --from=builder /app/public ./public
