@@ -2,6 +2,12 @@ services:
   app:
     container_name: hivechat
     image: hivenexus/hivechat:latest
+    build:
+      context: .
+      args:
+        HTTP_PROXY: ${HTTP_PROXY:-}
+        HTTPS_PROXY: ${HTTPS_PROXY:-}
+        NO_PROXY: ${NO_PROXY:-}
     ports:
       - "${HOST_PORT}:3000"
     depends_on:
@@ -23,6 +29,12 @@ services:
       DINGDING_AUTH_STATUS: ${DINGDING_AUTH_STATUS}
       DINGDING_CLIENT_ID: ${DINGDING_CLIENT_ID}
       DINGDING_CLIENT_SECRET: ${DINGDING_CLIENT_SECRET}
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ:-Etc/UTC}
+      HTTP_PROXY: ${HTTP_PROXY:-}
+      HTTPS_PROXY: ${HTTPS_PROXY:-}
+      NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1}
     restart: unless-stopped
     networks:
       - my-network

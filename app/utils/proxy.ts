@@ -1,11 +1,16 @@
 import { HttpsProxyAgent } from 'https-proxy-agent';
+import { Dispatcher, ProxyAgent } from 'undici';
 
 /**
  * 获取系统代理配置的 fetch 选项
  * 自动检测环境变量中的代理设置
  * @returns fetch 选项，如果不需要代理则返回空对象
  */
-export function getProxyFetchOptions(): { agent?: any } {
+let cachedProxyUrl: string | null = null;
+let cachedDispatcher: Dispatcher | null = null;
+let cachedHttpsAgent: any | null = null;
+
+export function getProxyFetchOptions(): { dispatcher?: Dispatcher; agent?: any } {
   // 检测常见的代理环境变量
   const proxyUrl = process.env.HTTPS_PROXY || 
                    process.env.https_proxy || 
@@ -16,15 +21,30 @@ export function getProxyFetchOptions(): { agent?: any } {
 
   if (!proxyUrl) {
     // 没有代理设置，返回空对象
+    cachedProxyUrl = null;
+    cachedDispatcher = null;
+    cachedHttpsAgent = null;
     return {};
+  }
+
+  if (cachedProxyUrl === proxyUrl && cachedDispatcher && cachedHttpsAgent) {
+    return {
+      dispatcher: cachedDispatcher,
+      agent: cachedHttpsAgent,
+    };
   }
 
   try {
     // 创建 https-proxy-agent 实例
+    const dispatcher = new ProxyAgent(proxyUrl);
     const agent = new HttpsProxyAgent(proxyUrl);
+    cachedProxyUrl = proxyUrl;
+    cachedDispatcher = dispatcher;
+    cachedHttpsAgent = agent;
     
     return {
-      agent: agent as any, // Node.js fetch 的 agent 选项
+      dispatcher,
+      agent: agent as any, // Node.js 传统 http/https 请求的 agent 选项
     };
   } catch (error) {
     console.warn('Failed to create proxy agent:', error);

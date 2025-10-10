@@ -44,18 +44,23 @@ FROM node:22-alpine AS runner
 WORKDIR /app
 
 # 设置环境变量
-ENV NODE_ENV=production
-ENV IS_DOCKER=true
+ENV NODE_ENV=production \
+    IS_DOCKER=true \
+    TZ=Etc/UTC
 
 # 复制必要文件
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-RUN apk add --no-cache bash
+RUN apk add --no-cache bash shadow su-exec tzdata
+
+COPY docker/entrypoint.sh /init
+RUN chmod +x /init
 
 # 暴露端口
 EXPOSE 3000
 
 # 入口命令
+ENTRYPOINT ["/init"]
 CMD ["node", "server.js"]
