@@ -51,7 +51,7 @@ fi
 # ensure user is member of runtime group when both exist
 if id -u "$RUNTIME_USER" >/dev/null 2>&1; then
   if ! id -nG "$RUNTIME_USER" | tr ' ' '\n' | grep -qx "$RUNTIME_GROUP"; then
-    addgroup "$RUNTIME_USER" "$RUNTIME_GROUP" >/dev/null 2>&1 || true
+    addgroup "$RUNTIME_GROUP" "$RUNTIME_USER" >/dev/null 2>&1 || true
   fi
 fi
 
@@ -61,4 +61,4 @@ for path in /app /app/.next /app/.next/static /app/public; do
   fi
 done
 
-exec su-exec "$PUID":"$PGID" "$@"
+exec su-exec "$RUNTIME_USER":"$RUNTIME_GROUP" "$@"
