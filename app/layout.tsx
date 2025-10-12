@@ -5,6 +5,7 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { SessionProvider } from 'next-auth/react';
+import "./config/fetchProxy";
 import "./globals.css";
 
 export const metadata: Metadata = {
