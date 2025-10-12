@@ -23,6 +23,8 @@ services:
       DINGDING_AUTH_STATUS: ${DINGDING_AUTH_STATUS}
       DINGDING_CLIENT_ID: ${DINGDING_CLIENT_ID}
       DINGDING_CLIENT_SECRET: ${DINGDING_CLIENT_SECRET}
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
     restart: unless-stopped
     networks:
       - my-network

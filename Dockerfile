@@ -46,16 +46,22 @@ WORKDIR /app
 # 设置环境变量
 ENV NODE_ENV=production
 ENV IS_DOCKER=true
+ENV PUID=1000
+ENV PGID=1000
 
 # 复制必要文件
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-RUN apk add --no-cache bash
+RUN apk add --no-cache bash su-exec
+
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # 暴露端口
 EXPOSE 3000
 
 # 入口命令
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["node", "server.js"]
