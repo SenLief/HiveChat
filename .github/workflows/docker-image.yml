@@ -32,7 +32,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: hivenexus/hivechat
+          images: janzbff/hivechat
           tags: |
             type=raw,value=${{ github.event.inputs.version || 'latest' }}
             type=raw,value=latest
